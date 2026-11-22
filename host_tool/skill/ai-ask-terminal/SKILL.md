@@ -23,20 +23,20 @@ Use this skill whenever you need to notify the user audibly, display live task p
    Use `host_tool/ask_cli.py`:
    ```powershell
    # Ask user with constrained KV or Text layout and block for touch click
-   python d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/ask_cli.py --host $env:AI_TERMINAL_HOST ask `
+   python <REPO_DIR>/host_tool/ask_cli.py --host $env:AI_TERMINAL_HOST ask `
      --state warning --title "是否执行变更？" --layout kv `
      --kv "*操作=部署固件,目标=COM5" `
      --buttons "allow:允许:success,deny:拒绝:danger:default" --sound ask
 
    # Push non-blocking progress
-   python d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/ask_cli.py --host $env:AI_TERMINAL_HOST status `
+   python <REPO_DIR>/host_tool/ask_cli.py --host $env:AI_TERMINAL_HOST status `
      --state running --title "正在构建项目" --percent 60 --sound info
    ```
 
 3. **Guarded Shell Execution (for Agents without native Hook support)**:
    Prefix risky shell commands with `guarded_exec.py` so the command pauses for physical screen approval before running:
    ```powershell
-   python d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/guarded_exec.py -- <command>
+   python <REPO_DIR>/host_tool/guarded_exec.py -- <command>
    ```
 
 ## Constrained DSL Rules

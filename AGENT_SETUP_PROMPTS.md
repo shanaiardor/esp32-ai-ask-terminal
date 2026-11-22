@@ -12,15 +12,15 @@
 不要盲目运行外部脚本猜测环境——请先确认设备连通性，再根据**你自己的宿主框架类型**，用你自己的文件读写工具精准修改对应配置。
 
 ### 本项目提供的现成工具资产（绝对路径参考）
-- **标准 MCP Server（stdio JSON-RPC）**：`d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/ai_terminal_mcp.py`
+- **标准 MCP Server（stdio JSON-RPC）**：`<REPO_DIR>/host_tool/ai_terminal_mcp.py`
   - 暴露 5 个工具：`ask_user_on_terminal`、`show_ai_status_on_terminal`、`play_terminal_sound`、`dismiss_terminal_prompt`、`approve_tool_permission`
-- **通用 `PreToolUse` 权限拦截钩子脚本**：`d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/permission_hook.py`
+- **通用 `PreToolUse` 权限拦截钩子脚本**：`<REPO_DIR>/host_tool/permission_hook.py`
   - 兼容 Antigravity / Claude Code 的 stdin/stdout JSON 契约，支持 `--mode smart`（只拦截高危/绕过沙箱命令）和 `--mode strict`（全部拦截），ESP32 离线时自动返回 `"decision": "ask"` 回退桌面弹窗。
-- **Pi 原生 TypeScript 扩展**：`d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/pi_extension/ai-ask-terminal.ts`
+- **Pi 原生 TypeScript 扩展**：`<REPO_DIR>/host_tool/pi_extension/ai-ask-terminal.ts`
 - **通用 CLI & 受控 Shell 网关**：
-  - `d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/ask_cli.py`
-  - `d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/guarded_exec.py`
-- **通用 Skill 文档**：`d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/skill/ai-ask-terminal/SKILL.md`
+  - `<REPO_DIR>/host_tool/ask_cli.py`
+  - `<REPO_DIR>/host_tool/guarded_exec.py`
+- **通用 Skill 文档**：`<REPO_DIR>/host_tool/skill/ai-ask-terminal/SKILL.md`
 
 ---
 
@@ -60,7 +60,7 @@ Pi 采用轻量核心 + TypeScript 扩展架构，**优先使用原生 Extension
      ```json
      "ai-ask-terminal": {
        "command": "python",
-       "args": ["d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/ai_terminal_mcp.py"],
+       "args": ["<REPO_DIR>/host_tool/ai_terminal_mcp.py"],
        "env": {
          "AI_TERMINAL_HOST": "<ESP32_IP>",
          "PYTHONIOENCODING": "utf-8"
@@ -78,7 +78,7 @@ Pi 采用轻量核心 + TypeScript 扩展架构，**优先使用原生 Extension
            "hooks": [
              {
                "type": "command",
-               "command": "python d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/permission_hook.py --host <ESP32_IP> --mode smart",
+               "command": "python <REPO_DIR>/host_tool/permission_hook.py --host <ESP32_IP> --mode smart",
                "timeout": 70
              }
            ]
@@ -97,7 +97,7 @@ Pi 采用轻量核心 + TypeScript 扩展架构，**优先使用原生 Extension
 1. **挂载 MCP Server**：
    - 读取并合并 `~/.claude.json`（或项目 `.mcp.json`）中的 `"mcpServers"`，加入与上面相同的 `"ai-ask-terminal"` 配置。
 2. **接管权限审批（两种方式任选其一，可同时提示用户）**：
-   - **方式 A（`PreToolUse` Hook，无感自动生效）**：编辑 `~/.claude/settings.json`，在 `"hooks"."PreToolUse"` 数组中为 `"matcher": "Bash"` 添加命令 `python d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/permission_hook.py --host <ESP32_IP> --mode smart`。
+   - **方式 A（`PreToolUse` Hook，无感自动生效）**：编辑 `~/.claude/settings.json`，在 `"hooks"."PreToolUse"` 数组中为 `"matcher": "Bash"` 添加命令 `python <REPO_DIR>/host_tool/permission_hook.py --host <ESP32_IP> --mode smart`。
    - **方式 B（原生全权委托参数）**：提示用户启动 Claude Code 时带上 `--permission-prompt-tool mcp__ai-ask-terminal__approve_tool_permission`，即可把 Claude Code 所有内置权限确认框 100% 委托给 `ai_terminal_mcp.py` 的 `approve_tool_permission` 工具。
 3. **写入规则**：在 `~/.claude/CLAUDE.md` 追加 **【通用行为规则片段】**。
 
@@ -117,7 +117,7 @@ Pi 采用轻量核心 + TypeScript 扩展架构，**优先使用原生 Extension
     ```json
     {
       "type": "local",
-      "command": ["python", "d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/ai_terminal_mcp.py"],
+      "command": ["python", "<REPO_DIR>/host_tool/ai_terminal_mcp.py"],
       "environment": { "AI_TERMINAL_HOST": "<ESP32_IP>", "PYTHONIOENCODING": "utf-8" },
       "enabled": true
     }
@@ -142,7 +142,7 @@ Pi 采用轻量核心 + TypeScript 扩展架构，**优先使用原生 Extension
    - 收起回到待机：`POST http://<ESP32_IP>/api/dismiss`
    - **Windows 编码防坑提醒**：在 Windows CMD / PowerShell 中**禁止直接用 `curl -d '{...中文...}'` 传裸中文**（Windows 默认代码页会将其破坏成 `????`）；请优先使用 `ask_cli.py`、MCP / Pi 扩展工具，或将 JSON 中文转为 `\uXXXX` 转义序列 / 通过 UTF-8 文件 `--data-binary @payload.json` 发送。
 2. **用 `guarded_exec.py` 自行实现高危命令审批**：
-   - 将你的系统/指令规则设定为：执行高危 Shell 命令前，先经由 `python d:/ESP32/ESP32_lcd_349/workspace/ai_ask_terminal/host_tool/guarded_exec.py --host <ESP32_IP> -- <原命令>` 包装执行；或者直接把 **受限 DSL 协议** 写入你自己的 Tool 定义中。
+   - 将你的系统/指令规则设定为：执行高危 Shell 命令前，先经由 `python <REPO_DIR>/host_tool/guarded_exec.py --host <ESP32_IP> -- <原命令>` 包装执行；或者直接把 **受限 DSL 协议** 写入你自己的 Tool 定义中。
 
 ---
 
