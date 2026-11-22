@@ -4,7 +4,15 @@
 
 支持通过局域网 HTTP API / MCP Server 接入 **Claude Code / Cursor / Antigravity / OpenClaw / 自定义 Agent**，将高危操作审批、多选决策、数值微调、任务状态与音效提醒无缝托管到桌面硬件触控屏上。
 
-![Idle Clock Preview](docs/screenshot_idle.png)
+## 实机界面预览
+
+| 场景 | 实机截屏（`640×172`） |
+| --- | --- |
+| **桌面时钟待机**（含 18650 电量 / USB 图标 & AI 状态） | ![Idle Clock](docs/screenshot_idle.png) |
+| **高危命令审查**（`warning` + `kv` 键值高亮） | ![KV Warning Approval](docs/screenshot_kv_warning.png) |
+| **多选决策胶囊**（`asking` + `choice` 多选提交） | ![Multi-Choice Decision](docs/screenshot_choice.png) |
+| **数值微调步进**（`asking` + `number` 长按连发） | ![Number Stepper](docs/screenshot_number.png) |
+| **多阶段任务进度**（`running` + `progress` 流水线） | ![Pipeline Progress](docs/screenshot_progress.png) |
 
 ---
 
