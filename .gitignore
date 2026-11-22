@@ -1,0 +1,23 @@
+# ESP-IDF build outputs
+build/
+managed_components/
+sdkconfig
+sdkconfig.old
+*.log
+
+# Unused LVGL demos/examples/tests/docs (keeps repo lightweight while still building offline)
+components/lvgl/demos/
+components/lvgl/examples/
+components/lvgl/tests/
+components/lvgl/docs/
+
+# Temporary flash backups
+fonts_bin/*_flashed.bin
+
+# Python / OS / IDE
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
